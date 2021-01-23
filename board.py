@@ -32,8 +32,9 @@ class Board:
 
     def keydown_events(self, key):
         if self.selected_cell:
-            self.selected_cell.text = int(key)
-            self.sudoku_logic.set_value(self.selected_cell)
+            # self.selected_cell.text = int(key)
+            is_valid = self.sudoku_logic.is_valid(self.selected_cell.pos[0], self.selected_cell.pos[1], int(key))
+            self.sudoku_logic.set_value(self.selected_cell, int(key), is_valid)
     # -----------------------------------------------------------------
 
     # board state -----------------------------------------------------

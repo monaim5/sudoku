@@ -14,7 +14,9 @@ class Sudoku:
         self.icon = (Dir.static.value / 'sudoku.png').__str__()
         self.running = True
         self.mouse_pos = None
+        self.fps = 60
         pygame.init()
+        self.clock = pygame.time.Clock()
         pygame.display.set_caption(self.title)
         icon = pygame.image.load(self.icon)
         pygame.display.set_icon(icon)
@@ -31,6 +33,7 @@ class Sudoku:
 
     def run(self):
         while self.running:
+            # self.clock.tick(self.fps)
             self.events()
             self.update()
             self.draw()

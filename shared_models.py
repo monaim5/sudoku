@@ -88,3 +88,31 @@ class Label(Button):
     def draw_button(self):
         self.image.set_alpha(128)
         self.image.fill((255, 255, 255))
+
+
+def animate_color(current_color, end_color):
+    amt = 1
+    r, g, b = current_color
+
+    if r == end_color[0]:
+        pass
+    elif r < end_color[0]:
+        r += amt
+    elif r > end_color[0]:
+        r -= amt
+
+    if g == end_color[1]:
+        pass
+    elif g < end_color[1]:
+        g += amt
+    elif g > end_color[1]:
+        g -= amt
+
+    if b == end_color[2]:
+        pass
+    elif b < end_color[2]:
+        b += amt
+    elif b > end_color[2]:
+        b -= amt
+
+    return r, g, b

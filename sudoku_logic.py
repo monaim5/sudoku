@@ -3,6 +3,8 @@ import time
 
 import numpy as np
 
+from cell import Cell
+
 
 class SudokuLogic:
     def __init__(self, parent, base):
@@ -22,12 +24,25 @@ class SudokuLogic:
     def dirty(self):
         return
 
-    def set_value(self, cell):
-        if self.is_valid(cell.pos[0], cell.pos[1], int(cell.text)):
+    def set_value(self, cell, value, valid=None):
+        Cell.selected = cell
+
+        if valid is None:
+            cell.is_blank = True
+            cell.is_solved = False
             cell.is_error = False
+        elif valid:
+            cell.is_solved = True
+            cell.is_error = False
+            cell.is_blank = False
         else:
             cell.is_error = True
-        self.matrix[cell.pos[1]][cell.pos[0]] = cell.text
+            cell.is_blank = False
+            cell.is_solved = False
+
+        cell.text = value
+
+        self.matrix[cell.pos[1]][cell.pos[0]] = value
 
     def init_matrix(self, gaps):
         while not self.matrix_solved:
@@ -84,6 +99,7 @@ class SudokuLogic:
                         return
             self.matrix_solved = True
             return
+
         backtrack_algorithm()
 
     def solve_matrix_2(self, *, cells, delay=False, random_range=False, random_numbers=False):
@@ -93,7 +109,6 @@ class SudokuLogic:
             random.shuffle(numbers)
         if random_range:
             random.shuffle(cells_range)
-        print(random_range)
 
         def backtrack_algorithm():
             for i in cells_range:
@@ -104,28 +119,33 @@ class SudokuLogic:
                             exit()
                         is_valid = self.is_valid(cells[i].pos[0], cells[i].pos[1], num)
 
-                        if delay:
-                            cells[i].text = num
-                            self.set_value(cells[i])
-                            time.sleep(delay)
-                            cells[i].text = 0
-                            self.set_value(cells[i])
+                        self.set_value(cells[i], num, False)
+                        time.sleep(delay)
+                        self.set_value(cells[i], 0)
+
+                        # if delay:
+                        #     # cells[i].text = num
+                        #     self.set_value(cells[i], num, is_valid)
+                        #     time.sleep(delay)
+                        #     # cells[i].text = 0
+                        #     self.set_value(cells[i], 0, is_valid)
                         if is_valid:
-                            cells[i].text = num
-                            self.set_value(cells[i])
+                            self.set_value(cells[i], num, is_valid)
+                            time.sleep(0.1)
                             backtrack_algorithm()
                             if self.matrix_solved:
                                 return
-                            cells[i].text = 0
-                            self.set_value(cells[i])
+                            self.set_value(cells[i], 0, False)
 
                     return
             self.matrix_solved = True
             return
+
         backtrack_algorithm()
 
     def is_valid(self, x, y, number):
-        return self.valid_for_row(y, number) and self.valid_for_column(x, number) and self.valid_for_square(x, y, number)
+        return self.valid_for_row(y, number) and self.valid_for_column(x, number) and self.valid_for_square(x, y,
+                                                                                                            number)
 
     def valid_for_row(self, y, number):
         return number not in [x for x in self.matrix[y, :] if x != 0]
